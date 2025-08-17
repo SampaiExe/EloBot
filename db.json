@@ -1,0 +1,180 @@
+{
+  "_default": {
+    "1": {
+      "name": "Cheez",
+      "discordHandle": "lcz",
+      "elo": [-1, 1730, 1214, 1400.0, 1718],
+      "games": 10,
+      "wins": 6,
+      "roles": ["top", "jng", "mid", "adc", "sup"]
+    },
+    "2": {
+      "name": "Aydan",
+      "discordHandle": "shadowscontempt",
+      "elo": [-1.0, -1.0, 1653, 1100, -1.0],
+      "games": 4,
+      "wins": 1,
+      "roles": ["mid", "adc"]
+    },
+    "3": {
+      "name": "Lumi",
+      "discordHandle": "lumineszenz",
+      "elo": [1197, -1, 1201, 1201, 1201],
+      "games": 11,
+      "wins": 6,
+      "roles": ["top", "jng", "mid", "adc"]
+    },
+    "4": {
+      "name": "Sam",
+      "discordHandle": "sampai.exe",
+      "elo": [1000, -1, 1030, -1, -1],
+      "games": 11,
+      "wins": 9,
+      "roles": ["top", "mid", "adc"]
+    },
+    "5": {
+      "name": "Axile",
+      "discordHandle": "kokichat",
+      "elo": [1201, -1.0, 1188, -1.0, -1.0],
+      "games": 11,
+      "wins": 3,
+      "roles": ["mid", "top"]
+    },
+    "6": {
+      "name": "Tien",
+      "discordHandle": "tienv",
+      "elo": [2000.0, -1, 1999, 2400.0, -1],
+      "games": 8,
+      "wins": 4,
+      "roles": ["top", "mid", "adc"]
+    },
+    "7": {
+      "name": "Keis",
+      "discordHandle": "keisxdd",
+      "elo": [-1.0, -1.0, -1.0, 1410, 1484],
+      "games": 10,
+      "wins": 5,
+      "roles": ["sup", "adc"]
+    },
+    "8": {
+      "name": "Simon",
+      "discordHandle": "_yava",
+      "elo": [-1.0, -1.0, 2013, -1.0, 2028],
+      "games": 8,
+      "wins": 6,
+      "roles": ["sup", "mid"]
+    },
+    "9": {
+      "name": "David",
+      "discordHandle": "caladriusdavid",
+      "elo": [-1.0, 2227, -1.0, 2003, -1.0],
+      "games": 12,
+      "wins": 8,
+      "roles": ["adc", "jgl"]
+    },
+    "10": {
+      "name": "Sanni",
+      "discordHandle": "sanstone",
+      "elo": [1400, 1200.0, 1514, 1700.0, 1500],
+      "games": 1,
+      "wins": 1,
+      "roles": ["top", "jng", "mid", "adc", "sup"]
+    },
+    "11": {
+      "name": "Nicholas",
+      "discordHandle": "thundercuntingbatteries",
+      "elo": [1200, -1, -1, -1, -1],
+      "games": 2,
+      "wins": 1,
+      "roles": ["top", "jng", "mid", "sup"]
+    },
+    "12": {
+      "name": "Zema",
+      "discordHandle": "zema5460",
+      "elo": [1214, 1186, 1186, 1200, 1400],
+      "games": 3,
+      "wins": 1,
+      "roles": ["sup", "adc", "jng"]
+    },
+    "13": {
+      "name": "Ruffy",
+      "discordHandle": "ruffy0654",
+      "elo": [-1.0, 1400.0, -1.0, 1417, -1.0],
+      "games": 6,
+      "wins": 3,
+      "roles": ["adc", "jgl"]
+    },
+    "14": {
+      "name": "Omar",
+      "discordHandle": "xclsve.",
+      "elo": [1972, 1800, 2000.0, 1984, 2000],
+      "games": 13,
+      "wins": 6,
+      "roles": ["top", "jng", "mid", "adc", "sup"]
+    },
+    "15": {
+      "name": "Charlie",
+      "discordHandle": "hiimcharlie.",
+      "elo": [-1.0, 1686, -1.0, -1.0, -1.0],
+      "games": 1,
+      "wins": 0,
+      "roles": ["top", "jng", "mid", "adc", "sup"]
+    },
+    "16": {
+      "name": "Fabian",
+      "discordHandle": "cupu5279",
+      "elo": [1100, 1400, 1100, 986, 984],
+      "games": 2,
+      "wins": 0,
+      "roles": ["top", "jng", "mid", "adc", "sup"]
+    },
+    "17": {
+      "name": "furlash",
+      "discordHandle": "furlash",
+      "elo": [1200.0, 1184, 1200.0, 1200.0, 1200.0],
+      "games": 4,
+      "wins": 0,
+      "roles": ["top", "jng", "mid", "adc", "sup"]
+    },
+    "18": {
+      "name": "tothericefields",
+      "discordHandle": "tothericefields",
+      "elo": [1984, 1384, -1.0, -1.0, -1.0],
+      "games": 2,
+      "wins": 0,
+      "roles": ["jgl", "top"]
+    },
+    "19": {
+      "name": "trouted",
+      "discordHandle": "trouted",
+      "elo": [1431, -1.0, 1416, 1400.0, -1.0],
+      "games": 6,
+      "wins": 5,
+      "roles": ["mid", "top", "adc"]
+    },
+    "20": {
+      "name": "sikos",
+      "discordHandle": "sikos",
+      "elo": [1802, 1487, 1614, -1.0, -1.0],
+      "games": 5,
+      "wins": 2,
+      "roles": ["mid", "jgl", "top"]
+    },
+    "21": {
+      "name": "itsferum",
+      "discordHandle": "itsferum",
+      "elo": [-1.0, -1.0, -1.0, -1.0, 1201],
+      "games": 5,
+      "wins": 2,
+      "roles": ["sup"]
+    },
+    "22": {
+      "name": "shinoaki.",
+      "discordHandle": "shinoaki.",
+      "elo": [-1.0, 1200, 1202, -1.0, -1.0],
+      "games": 2,
+      "wins": 1,
+      "roles": ["jng", "mid"]
+    }
+  }
+}
