@@ -24,6 +24,7 @@ blueTeam = []
 redRating = 0
 blueRating = 0
 players = {}
+activePlayers = []
 load_dotenv()
 db = TinyDB('newDB.json')
 query = Query()
@@ -59,18 +60,31 @@ async def getUserPUUID(SummonerName):
     data = await response.json()
     return data['puuid']
 
-@bot.command()
-async def join(ctx):
-    pass
-
-@bot.command()
-async def leave(ctx):
-    pass
 
 @bot.event
 async def on_ready():
     await bot.tree.sync()  # Syncs all slash commands
     print(f"Logged in as {bot.user}")
+
+@bot.command()
+async def join(ctx):
+    p = playerTable.search(query.discordHandle == str(ctx.author))
+    if p is None:
+        await ctx.send("You are not in the Database, run /add_user to register.")
+        return
+    else:
+        activePlayers.append(ctx.author)
+        await ctx.send("You successfully joined the session.")
+    pass
+
+@bot.command()
+async def leave(ctx):
+    if ctx.author in activePlayers:
+        activePlayers.remove(ctx.author)
+        await ctx.send("You successfully left the session.")
+    else:
+        await ctx.send("You are not in the current session.")
+    pass
 
 # See stats for the specified player
 @bot.command()
@@ -98,25 +112,6 @@ async def user(ctx, *args):
                 await ctx.reply("Player not in database.")
     else:
         await ctx.reply("Wrong format. Please specify one or no players.")
-
-# #TODO
-# @bot.command()
-# async def add_user(ctx, *args):
-#     mentions = ctx.message.mentions
-#     print(mentions)
-#     if len(mentions) != 1:
-#         await ctx.reply("Wrong format. Name LeagueName#Tag.")
-#     match len(args):
-#         case 2:
-#             #Username already in DB
-#             if len(db.search(query.discordHandle == str(ctx.author))) != 0:
-#                 await ctx.reply(f"Player {str(ctx.author)} already in database.")
-#             else:
-#                 puuid = getUserPUUID(args[1])
-#                 db.insert({"name": args[0], "discordHandle": str(ctx.author), "ClientPUUID": puuid, "RiotPUUID": "",  "elo": elo, "games": [0,0,0,0,0], "wins": [0,0,0,0,0]})
-#                 await ctx.reply(f'Successfully added {str(ctx.author)} to database as {args[0]}.')
-#         case _:
-#             await ctx.reply("Wrong format. Please @player and specify their name or specify your name if you want to add yourself as a player.")
 
 class RegisterModal(ui.Modal):
     def __init__(self):
@@ -198,7 +193,6 @@ class RegisterModal(ui.Modal):
             f"Successfully registered {discord_name}!",
             ephemeral=True
         )
-
 
 @bot.tree.command(name="add_user", description="Register yourself")
 async def add_user(interaction: discord.Interaction):
