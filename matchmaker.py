@@ -1,4 +1,11 @@
 from pulp import *
+from tinydb import TinyDB, Query
+
+
+db = TinyDB('newDB.json')
+players = db.table('players')
+data = players.all()
+
 
 # ---- canonical roles and teams
 roles = ["top","jng","mid","adc","sup"]
@@ -28,29 +35,45 @@ def normalize_players(raw):
         r = r.lower()
         return role_alias.get(r, r)
 
-    entries = raw["_default"]
+    entries = raw
+    print(entries)
+    # entries = raw["_default"]
+    # print(entries)
     players = []
     E = {}   # E[name][role] -> float (or -1 for ineligible)
 
-    for key in sorted(entries, key=lambda x: int(x)):  # keep numeric order
-        rec = entries[key]
-        name = rec["name"]
-        # incoming 'elo' is a length-5 array aligned with ROLES order
-        elo_vec = rec["elo"]
-        # make sure length is 5 (top,jng,mid,adc,sup)
+    for entry in entries:
+        name = entry["name"]
+        elo_vec = entry["elo"]
         if len(elo_vec) != 5:
             raise ValueError(f"Elo vector for {name} must have length 5 in ROLES order {ROLES}.")
-
         players.append(name)
         E[name] = {}
+
         for idx, role in enumerate(roles):
             val = float(elo_vec[idx]) if elo_vec[idx] is not None else -1.0
             # if negative -> ineligible
             E[name][role] = val
 
+    # for key in sorted(entries, key=lambda x: int(x)):  # keep numeric order
+    #     rec = entries[key]
+    #     name = rec["name"]
+    #     # incoming 'elo' is a length-5 array aligned with ROLES order
+    #     elo_vec = rec["elo"]
+    #     # make sure length is 5 (top,jng,mid,adc,sup)
+    #     if len(elo_vec) != 5:
+    #         raise ValueError(f"Elo vector for {name} must have length 5 in ROLES order {ROLES}.")
+    #
+    #     players.append(name)
+    #     E[name] = {}
+    #     for idx, role in enumerate(roles):
+    #         val = float(elo_vec[idx]) if elo_vec[idx] is not None else -1.0
+    #         # if negative -> ineligible
+    #         E[name][role] = val
+
     return players, E
 
-players, E = normalize_players(RAW_DATA)
+players, E = normalize_players(data)
 
 model = LpProblem("Minimise_Elo_Difference_Between_Teams", LpMinimize)
 

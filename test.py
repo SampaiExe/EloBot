@@ -49,14 +49,15 @@ def parse_match(match_json, champion_map):
             "summonerName": identity.get("summonerName") or identity.get("gameName"),
             "tagLine": identity.get("tagLine", ""),
             "champion": champion_name,
-            "role": timeline.get("role", "UNKNOWN"),
+            "role": timeline.get("lane", "UNKNOWN"),
             "teamId": p.get("teamId"),
             "kills": stats.get("kills", 0),
             "deaths": stats.get("deaths", 0),
             "assists": stats.get("assists", 0),
             "damageToChampions": stats.get("totalDamageDealtToChampions", 0),
             "totalCS": total_cs,
-            "win": stats.get("win", False)
+            "win": stats.get("win", False),
+            "puuid": identity.get("puuid")
         }
         players.append(player_data)
 
@@ -78,7 +79,7 @@ async def main():
 
     for p in players:
         print(f"{p['summonerName']}#{p['tagLine']} - {p['champion']} ({p['role']}) "
-              f"KDA: {p['kills']}/{p['deaths']}/{p['assists']} DMG: {p['damageToChampions']} CS: {p['totalCS']} Win: {p['win']}")
+              f"KDA: {p['kills']}/{p['deaths']}/{p['assists']} DMG: {p['damageToChampions']} CS: {p['totalCS']} Win: {p['win']} : {p['puuid']}")
 
 asyncio.run(main())
 

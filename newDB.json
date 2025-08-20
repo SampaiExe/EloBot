@@ -1,0 +1,140 @@
+{
+  "_default": {},
+  "players": {
+    "1": {
+      "name": "Tien",
+      "discordHandle": "Tien",
+      "ClientPUUID": "6e61bdd4-fd08-588b-b34b-1cfc4b4a14b9",
+      "RiotPUUID": "",
+      "elo": [
+        775,
+        -1,
+        775,
+        950,
+        -1
+      ],
+      "games": 0,
+      "wins": 0
+    },
+    "2": {
+      "name": "David",
+      "discordHandle": "caladriusdavid",
+      "ClientPUUID": "82f9c5a7-fb2d-5218-9afc-af7eaa79b667",
+      "RiotPUUID": "",
+      "elo": [
+        -1,
+        850,
+        -1,
+        675,
+        -1
+      ],
+      "games": 0,
+      "wins": 0
+    },
+    "3": {
+      "name": "Sikos",
+      "discordHandle": "sikos",
+      "ClientPUUID": "51e0070b-7424-5b9b-ae9d-f2e57b4e6419",
+      "RiotPUUID": "",
+      "elo": [
+        820,
+        -1,
+        680,
+        -1,
+        700
+      ],
+      "games": 0,
+      "wins": 0
+    },
+    "4": {
+      "name": "Omer",
+      "discordHandle": "xclsve.",
+      "ClientPUUID": "a0ba0b8f-e921-5dd3-9d92-d1f27cad40e3",
+      "RiotPUUID": "",
+      "elo": [
+        675,
+        650,
+        700,
+        700,
+        675
+      ],
+      "games": 0,
+      "wins": 0
+    },
+    "5": {
+      "name": "Kevin",
+      "discordHandle": "tothericefields",
+      "ClientPUUID": "b002f5c2-a760-5d1c-b06b-d7bc6b9aad40",
+      "RiotPUUID": "",
+      "elo": [
+        676,
+        550,
+        -1,
+        -1,
+        -1
+      ],
+      "games": 0,
+      "wins": 0
+    },
+    "6": {
+      "name": "Sam",
+      "discordHandle": "sampai.exe",
+      "ClientPUUID": "e64d856e-64ba-527d-9cb0-7b456f9775e0",
+      "RiotPUUID": "",
+      "elo": [
+        450,
+        -1,
+        550,
+        450,
+        -1
+      ],
+      "games": 0,
+      "wins": 0
+    },
+    "7": {
+      "name": "Lumi",
+      "discordHandle": "lumineszenz",
+      "ClientPUUID": "e225fdfe-ca49-58c2-9e5b-7a39637df5cb",
+      "RiotPUUID": "",
+      "elo": [
+        550,
+        -1,
+        600,
+        650,
+        650
+      ],
+      "games": 0,
+      "wins": 0
+    },
+    "8": {
+      "name": "Keis",
+      "discordHandle": "keisxdd",
+      "ClientPUUID": "81a0dc8e-8d28-584e-b630-1f3064d052eb",
+      "RiotPUUID": "",
+      "elo": [
+        500,
+        -1,
+        500,
+        650,
+        600
+      ],
+      "games": 0,
+      "wins": 0
+    },
+    "9": {
+      "name": "Simon",
+      "discordHandle": "yava",
+      "ClientPUUID": "8a12fae4-ed9f-51d4-b447-06418d881157",
+      "RiotPUUID": "",
+      "elo": [
+        550,
+        600,
+        730,
+        650,
+        800
+      ],
+      "games": 0,
+      "wins": 0
+    }
+  }
+}

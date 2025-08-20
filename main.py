@@ -16,7 +16,7 @@ blueRating = 0
 players = {}
 load_dotenv()
 db = TinyDB('db.json')
-PlayerQ = Query()
+query = Query()
 
 for item in db:
     _x = str(item).replace("\'", "\"")
@@ -38,7 +38,7 @@ bot = commands.Bot(command_prefix='&', intents = intents, help_command=None)
 async def user(ctx, *args):
     members = ctx.message.mentions
     if len(args) == 0:  #Info about yourself
-        p = db.search(PlayerQ.discordHandle == str(ctx.author))
+        p = db.search(query.discordHandle == str(ctx.author))
         print(p)
         if len(p) > 0: #player exists
             x = json.loads(str(p[0]).replace("\'", "\""), object_hook=lambda d: SimpleNamespace(**d))
@@ -50,7 +50,7 @@ async def user(ctx, *args):
         if len(members) != 1: 
             await ctx.reply("Wrong format. Please specify one or no players.")
         else:
-            p = db.search(PlayerQ.discordHandle == str(members[0]))
+            p = db.search(query.discordHandle == str(members[0]))
             if len(p) > 0: #player exists
                 x = json.loads(str(p[0]).replace("\'", "\""), object_hook=lambda d: SimpleNamespace(**d))
                 _p = player.Player(x.name, x.discordHandle, x.elo, x.games, x.wins, x.roles)
@@ -71,7 +71,7 @@ async def add_user(ctx, *args):
             await ctx.reply("Wrong format. Please @player and specify their name or specify your name if you want to add yourself as a player.")
         case 1:
             if len(members) == 0:
-                if len(db.search(PlayerQ.discordHandle == str(ctx.author))) == 0:
+                if len(db.search(query.discordHandle == str(ctx.author))) == 0:
                     userRoles = getUserRoles(ctx, ctx.author)
                     elo = calcElo(ctx, user, userRoles)
                     await ctx.reply(f'Successfully added {str(ctx.author)} to database as {args[0]}.')
@@ -83,7 +83,7 @@ async def add_user(ctx, *args):
         case 2:
             if len(members) != 1:
                 await ctx.reply("Wrong format. Please @player and specify their name or specify your name if you want to add yourself as a player.")
-            elif len(db.search(PlayerQ.discordHandle == str(members[0]))) > 0:
+            elif len(db.search(query.discordHandle == str(members[0]))) > 0:
                 await ctx.reply(f"Player {str(members[0])} already in database.")
             else:
                 userRoles = getUserRoles(ctx, members[0])
@@ -104,32 +104,32 @@ async def win(ctx, *args):
         Pt2 = winProb(redRating, blueRating)
         if (winner == "red" or winner == "team 1" or winner == "team1"):
             for player in redTeam:
-                db.update({'games': player.games+1}, PlayerQ.discordHandle == player.discordHandle)
-                db.update({'wins': player.wins+1}, PlayerQ.discordHandle == player.discordHandle)
-                #Ra = Ra + K * (1-Pt1)
-                #Rb = Rb + K * (0-Pt2)
+                db.update({'games': player.games+1}, query.discordHandle == player.discordHandle)
+                db.update({'wins': player.wins+1}, query.discordHandle == player.discordHandle)
+                # Ra = Ra + K * (1-Pt1)
+                # Rb = Rb + K * (0-Pt2)
                 player.elo[player.rolePlayed] = round(player.elo[player.rolePlayed] + 30 * (1-Pt1))
-                db.update({'elo': player.elo}, PlayerQ.discordHandle == player.discordHandle)
+                db.update({'elo': player.elo}, query.discordHandle == player.discordHandle)
             for player in blueTeam:
-                db.update({'games': player.games+1}, PlayerQ.discordHandle == player.discordHandle)
+                db.update({'games': player.games+1}, query.discordHandle == player.discordHandle)
                 player.elo[player.rolePlayed] = round(player.elo[player.rolePlayed] + 30 * (0-Pt2))
-                db.update({'elo': player.elo}, PlayerQ.discordHandle == player.discordHandle)
+                db.update({'elo': player.elo}, query.discordHandle == player.discordHandle)
             redRating = 0
             blueRating = 0
             redTeam = []
             blueTeam = []
         elif (winner == "blue" or winner == "team 2" or winner == "team2"):
             for player in blueTeam:
-                db.update({'games': player.games+1}, PlayerQ.discordHandle == player.discordHandle)
-                db.update({'wins': player.wins+1}, PlayerQ.discordHandle == player.discordHandle)
+                db.update({'games': player.games+1}, query.discordHandle == player.discordHandle)
+                db.update({'wins': player.wins+1}, query.discordHandle == player.discordHandle)
                 #Ra = Ra + K * (0-Pt1)
                 #Rb = Rb + K * (1-Pt2)
                 player.elo[player.rolePlayed] = round(player.elo[player.rolePlayed] + 30 * (1-Pt2))
-                db.update({'elo': player.elo}, PlayerQ.discordHandle == player.discordHandle)
+                db.update({'elo': player.elo}, query.discordHandle == player.discordHandle)
             for player in redTeam:
-                db.update({'games': player.games+1}, PlayerQ.discordHandle == player.discordHandle)
+                db.update({'games': player.games+1}, query.discordHandle == player.discordHandle)
                 player.elo[player.rolePlayed] = round(player.elo[player.rolePlayed] + 30 * (0-Pt1))
-                db.update({'elo': player.elo}, PlayerQ.discordHandle == player.discordHandle)
+                db.update({'elo': player.elo}, query.discordHandle == player.discordHandle)
             redRating = 0
             blueRating = 0
             redTeam = []
@@ -156,7 +156,7 @@ async def start_session(ctx):
             s = "Current Players: \n"
             async for user in events[0].users():
                 print(user)
-                p = db.search(PlayerQ.discordHandle == str(user))
+                p = db.search(query.discordHandle == str(user))
                 print(len(p))
                 if len(p) > 0:
                     x = json.loads(str(p[0]).replace("\'", "\""), object_hook=lambda d: SimpleNamespace(**d))
@@ -166,7 +166,7 @@ async def start_session(ctx):
                     userRoles = getUserRoles(ctx, user)
                     elo = calcElo(ctx, user, userRoles)
                     db.insert({"name": str(user), "discordHandle": str(user), "elo": elo, "games": 0, "wins": 0, "roles": userRoles})
-                    p = str(db.search(PlayerQ.discordHandle == str(user))[0]).replace("\'", "\"")
+                    p = str(db.search(query.discordHandle == str(user))[0]).replace("\'", "\"")
                     x = json.loads(p, object_hook=lambda d: SimpleNamespace(**d))
                     _p = player.Player(x.name, x.discordHandle, x.elo, x.games, x.wins, x.roles)
                     s += str(_p) + "\n"
@@ -327,7 +327,7 @@ async def add_role(ctx, *args):
     if len(args) != 1:
         await ctx.reply("Wrong Format. Please specify the role you want to add. (i.e top)")
         return
-    p = db.search(PlayerQ.discordHandle == str(ctx.author))
+    p = db.search(query.discordHandle == str(ctx.author))
     if len(p) < 1:
         await ctx.reply("Player not in database.")
         return
@@ -341,8 +341,8 @@ async def add_role(ctx, *args):
         i = getRoleIndex(args[0])
         if i != -1:
             _p.elo[i] = 1200
-            db.update({'roles': _p.roles}, PlayerQ.discordHandle == str(ctx.author))
-            db.update({'elo': _p.elo}, PlayerQ.discordHandle == str(ctx.author))
+            db.update({'roles': _p.roles}, query.discordHandle == str(ctx.author))
+            db.update({'elo': _p.elo}, query.discordHandle == str(ctx.author))
             await ctx.reply("Roles successfully updated.")
         else:
             await ctx.reply("Unknown Role.")
@@ -352,7 +352,7 @@ async def remove_role(ctx, *args):
     if len(args) != 1:
         await ctx.reply("Wrong Format. Please specify the role you want to remove. (i.e top)")
         return
-    p = db.search(PlayerQ.discordHandle == str(ctx.author))
+    p = db.search(query.discordHandle == str(ctx.author))
     if len(p) < 1:
         await ctx.reply("Player not in database.")
         return
@@ -366,8 +366,8 @@ async def remove_role(ctx, *args):
         i = getRoleIndex(args[0])
         if i != -1:
             _p.elo[i] = -1
-            db.update({'roles': _p.roles}, PlayerQ.discordHandle == str(ctx.author))
-            db.update({'elo': _p.elo}, PlayerQ.discordHandle == str(ctx.author))
+            db.update({'roles': _p.roles}, query.discordHandle == str(ctx.author))
+            db.update({'elo': _p.elo}, query.discordHandle == str(ctx.author))
             await ctx.reply("Roles successfully updated.")
         else:
             await ctx.reply("Unknown Role.")
@@ -377,7 +377,7 @@ async def update_elo(ctx, *args):
     if len(args) != 2:
         await ctx.reply("Wrong Format. Please specify the role you want to edit and the value it should take on. (i.e top 1200)")
         return
-    p = db.search(PlayerQ.discordHandle == str(ctx.author))
+    p = db.search(query.discordHandle == str(ctx.author))
     if len(p) < 1:
         await ctx.reply("Player not in database.")
         return
@@ -390,7 +390,7 @@ async def update_elo(ctx, *args):
         i = getRoleIndex(args[0])
         if i != -1:
             _p.elo[i] = int(args[1])
-            db.update({'elo': _p.elo}, PlayerQ.discordHandle == str(ctx.author))
+            db.update({'elo': _p.elo}, query.discordHandle == str(ctx.author))
             await ctx.reply("Elo successfully updated.")
         else:
             await ctx.reply("Unknown Role.")
