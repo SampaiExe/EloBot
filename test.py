@@ -67,6 +67,9 @@ def parse_match(match_json, champion_map):
 async def main():
     wllp = await Willump().start()
 
+    # response = await wllp.request('get', f'/lol-summoner/v1/alias/lookup?gameName=the voices ahaha&tagLine=feet')
+
+
     gameID = 7497261946
     response = await wllp.request('get', f'/lol-match-history/v1/games/{gameID}')
     game = await response.json()

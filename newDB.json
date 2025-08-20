@@ -3,7 +3,7 @@
   "players": {
     "1": {
       "name": "Tien",
-      "discordHandle": "Tien",
+      "discordHandle": "tienv",
       "ClientPUUID": "6e61bdd4-fd08-588b-b34b-1cfc4b4a14b9",
       "RiotPUUID": "",
       "elo": [
@@ -13,8 +13,20 @@
         950,
         -1
       ],
-      "games": 0,
-      "wins": 0
+      "games": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "wins": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     "2": {
       "name": "David",
@@ -28,8 +40,20 @@
         675,
         -1
       ],
-      "games": 0,
-      "wins": 0
+      "games": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "wins": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     "3": {
       "name": "Sikos",
@@ -43,8 +67,20 @@
         -1,
         700
       ],
-      "games": 0,
-      "wins": 0
+      "games": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "wins": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     "4": {
       "name": "Omer",
@@ -58,8 +94,20 @@
         700,
         675
       ],
-      "games": 0,
-      "wins": 0
+      "games": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "wins": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     "5": {
       "name": "Kevin",
@@ -73,25 +121,22 @@
         -1,
         -1
       ],
-      "games": 0,
-      "wins": 0
+      "games": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "wins": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     "6": {
-      "name": "Sam",
-      "discordHandle": "sampai.exe",
-      "ClientPUUID": "e64d856e-64ba-527d-9cb0-7b456f9775e0",
-      "RiotPUUID": "",
-      "elo": [
-        450,
-        -1,
-        550,
-        450,
-        -1
-      ],
-      "games": 0,
-      "wins": 0
-    },
-    "7": {
       "name": "Lumi",
       "discordHandle": "lumineszenz",
       "ClientPUUID": "e225fdfe-ca49-58c2-9e5b-7a39637df5cb",
@@ -103,10 +148,22 @@
         650,
         650
       ],
-      "games": 0,
-      "wins": 0
+      "games": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "wins": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
-    "8": {
+    "7": {
       "name": "Keis",
       "discordHandle": "keisxdd",
       "ClientPUUID": "81a0dc8e-8d28-584e-b630-1f3064d052eb",
@@ -118,10 +175,22 @@
         650,
         600
       ],
-      "games": 0,
-      "wins": 0
+      "games": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "wins": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
-    "9": {
+    "8": {
       "name": "Simon",
       "discordHandle": "yava",
       "ClientPUUID": "8a12fae4-ed9f-51d4-b447-06418d881157",
@@ -133,10 +202,22 @@
         650,
         800
       ],
-      "games": 0,
-      "wins": 0
+      "games": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "wins": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
-    "10": {
+    "9": {
       "name": "Cheez",
       "discordHandle": "lcz",
       "ClientPUUID": "c83d819d-923b-565b-9ba8-5b210ab6bf37",
@@ -148,8 +229,74 @@
         600,
         600
       ],
-      "games": 0,
-      "wins": 0
+      "games": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "wins": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "10": {
+      "name": "Sam",
+      "discordHandle": "sampai.exe",
+      "ClientPUUID": "e64d856e-64ba-527d-9cb0-7b456f9775e0",
+      "RiotPUUID": "",
+      "elo": [
+        450,
+        -1,
+        550,
+        450,
+        -1
+      ],
+      "games": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "wins": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "11": {
+      "name": "Fabian",
+      "discordHandle": "cupu5279",
+      "ClientPUUID": "20b51cdb-9d4a-5420-85d0-a411315b6b4b",
+      "RiotPUUID": "",
+      "elo": [
+        -1,
+        500,
+        -1,
+        -1,
+        -1
+      ],
+      "games": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "wins": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     }
   }
 }
