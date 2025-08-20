@@ -135,6 +135,21 @@
       ],
       "games": 0,
       "wins": 0
+    },
+    "10": {
+      "name": "Cheez",
+      "discordHandle": "lcz",
+      "ClientPUUID": "c83d819d-923b-565b-9ba8-5b210ab6bf37",
+      "RiotPUUID": "",
+      "elo": [
+        300,
+        600,
+        400,
+        600,
+        600
+      ],
+      "games": 0,
+      "wins": 0
     }
   }
 }

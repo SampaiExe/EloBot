@@ -9,6 +9,14 @@ from pulp import *
 import numpy as np
 import math
 
+#TODO Elo Mapping
+#TODO join/leave for matches
+#TODO Match Logic
+#TODO WebServices
+#TODO integrate matchmaker
+#TODO elo calculations
+
+
 redTeam = []
 blueTeam = []
 redRating = 0

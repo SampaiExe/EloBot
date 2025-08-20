@@ -11,22 +11,6 @@ data = players.all()
 roles = ["top","jng","mid","adc","sup"]
 teams = ["blue","red"]
 
-# ---- your raw data (paste it into RAW_DATA)
-RAW_DATA = {
-  "_default": {
-    "1": {"name":"Cheez","discordHandle":"lcz","elo":[-1,1730,1214,1400.0,1718],"games":10,"wins":6,"roles":["top","jng","mid","adc","sup"]},
-    "2": {"name":"Aydan","discordHandle":"shadowscontempt","elo":[-1.0,-1.0,1653,1100,-1.0],"games":4,"wins":1,"roles":["mid","adc"]},
-    "3": {"name":"Lumi","discordHandle":"lumineszenz","elo":[1197,-1,1201,1201,1201],"games":11,"wins":6,"roles":["top","jng","mid","adc"]},
-    "4": {"name":"Sam","discordHandle":"sampai.exe","elo":[1000,-1,1030,-1,-1],"games":11,"wins":9,"roles":["top","mid","adc"]},
-    "5": {"name":"Axile","discordHandle":"kokichat","elo":[1201,-1.0,1188,-1.0,-1.0],"games":11,"wins":3,"roles":["mid","top"]},
-    "6": {"name":"Tien","discordHandle":"tienv","elo":[2000.0,-1,1999,2400.0,-1],"games":8,"wins":4,"roles":["top","mid","adc"]},
-    "7": {"name":"Keis","discordHandle":"keisxdd","elo":[-1.0,-1.0,-1.0,1410,1484],"games":10,"wins":5,"roles":["sup","adc"]},
-    "8": {"name":"Simon","discordHandle":"_yava","elo":[-1.0,-1.0,2013,-1.0,2028],"games":8,"wins":6,"roles":["sup","mid"]},
-    "9": {"name":"David","discordHandle":"caladriusdavid","elo":[-1.0,2227,-1.0,2003,-1.0],"games":12,"wins":8,"roles":["adc","jgl"]},
-    "10":{"name":"Sanni","discordHandle":"sanstone","elo":[1400,1200.0,1514,1700.0,1500],"games":1,"wins":1,"roles":["top","jng","mid","adc","sup"]}
-  }
-}
-
 # ---- normalize into players list + Elo matrix E[name][role]
 def normalize_players(raw):
     # map common typos to canonical roles
@@ -46,7 +30,7 @@ def normalize_players(raw):
         name = entry["name"]
         elo_vec = entry["elo"]
         if len(elo_vec) != 5:
-            raise ValueError(f"Elo vector for {name} must have length 5 in ROLES order {ROLES}.")
+            raise ValueError(f"Elo vector for {name} must have length 5 in ROLES order {roles}.")
         players.append(name)
         E[name] = {}
 

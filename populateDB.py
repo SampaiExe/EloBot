@@ -4,7 +4,7 @@ db = TinyDB("newDB.json")
 db.truncate()
 Player = Query()
 playerTable = db.table("players")
-
+playerTable.truncate()
 players = [
         {"name": "Tien",        "discordHandle": "Tien",                "ClientPUUID": "6e61bdd4-fd08-588b-b34b-1cfc4b4a14b9", "RiotPUUID": "",    "elo": [775,-1,775,950,-1],   "games": 0,     "wins": 0},
         {"name": "David",       "discordHandle": "caladriusdavid",      "ClientPUUID": "82f9c5a7-fb2d-5218-9afc-af7eaa79b667", "RiotPUUID": "",    "elo": [-1,850,-1,675,-1],   "games": 0,     "wins": 0},
@@ -15,7 +15,7 @@ players = [
         {"name": "Lumi",        "discordHandle": "lumineszenz",         "ClientPUUID": "e225fdfe-ca49-58c2-9e5b-7a39637df5cb", "RiotPUUID": "",    "elo": [550,-1,600,650,650],   "games": 0,     "wins": 0},
         {"name": "Keis",        "discordHandle": "keisxdd",             "ClientPUUID": "81a0dc8e-8d28-584e-b630-1f3064d052eb", "RiotPUUID": "",    "elo": [500,-1,500,650,600],   "games": 0,     "wins": 0},
         {"name": "Simon",       "discordHandle": "yava",                "ClientPUUID": "8a12fae4-ed9f-51d4-b447-06418d881157", "RiotPUUID": "",    "elo": [550,600,730,650,800],   "games": 0,     "wins": 0},
-        # {"name": "Cheez",     "discordHandle": "lcz",                 "ClientPUUID": "c83d819d-923b-565b-9ba8-5b210ab6bf37", "RiotPUUID": "",    "elo": [0,0,0,0,0],   "games": 0,     "wins": 0},
+        {"name": "Cheez",     "discordHandle": "lcz",                 "ClientPUUID": "c83d819d-923b-565b-9ba8-5b210ab6bf37", "RiotPUUID": "",    "elo": [300,600,400,600,600],   "games": 0,     "wins": 0},
         # {"name": "Aydan",     "discordHandle": "shadowscontempt",     "ClientPUUID": "dc1e4a13-3a8f-59ab-a3a0-53c64e434793", "RiotPUUID": "",    "elo": [0,0,0,0,0],   "games": 0,     "wins": 0},
         # {"name": "Fabian",    "discordHandle": "cupu5276",            "ClientPUUID": "20b51cdb-9d4a-5420-85d0-a411315b6b4b", "RiotPUUID": "",    "elo": [0,0,0,0,0],   "games": 0,     "wins": 0},
         # {"name": "Axile",     "discordHandle": "kokichat",            "ClientPUUID": "a72789ea-a1c1-5f7d-bcc0-fd009acafabf", "RiotPUUID": "",    "elo": [0,0,0,0,0], "games": 0,     "wins": 0},
