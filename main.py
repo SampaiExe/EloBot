@@ -46,6 +46,7 @@ intents.members = True
 
 bot = commands.Bot(command_prefix='&', intents = intents, help_command=None)
 #----------------------------------------------------------------------------------------------#
+
 #Returns PUUID by Summoner Name
 async def getUserPUUID(SummonerName):
     if SummonerName is None:
@@ -60,12 +61,13 @@ async def getUserPUUID(SummonerName):
     data = await response.json()
     return data['puuid']
 
-
+#Sync Slash-Commands
 @bot.event
 async def on_ready():
     await bot.tree.sync()  # Syncs all slash commands
     print(f"Logged in as {bot.user}")
 
+#Join the In-House Session
 @bot.command()
 async def join(ctx):
     p = playerTable.search(query.discordHandle == str(ctx.author))
@@ -77,6 +79,7 @@ async def join(ctx):
         await ctx.send("You successfully joined the session.")
     pass
 
+#Leave the in-house session
 @bot.command()
 async def leave(ctx):
     if ctx.author in activePlayers:
@@ -249,6 +252,7 @@ async def win(ctx, *args):
     pass
 
 #TODO
+#Start the in-house session
 @bot.command()
 async def start_session(ctx):
     global redTeam, blueTeam, redRating, blueRating
@@ -287,113 +291,11 @@ async def start_session(ctx):
     else:
         await ctx.reply("No scheduled events found.")
 
-#TODO
+#TODO Replace with functionality of matchmaker.py
+#Shuffle Teams
 async def shuffle(ctx, players):
-    global redTeam, blueTeam, redRating, blueRating
+    pass
 
-    redTeam = []
-    blueTeam = []
-    prob = LpProblem("Minimize Elo Difference", LpMinimize)
-    random.shuffle(players)
-    # Extract Elo ratings of players
-    elo_ratings = [player.elo for player in players]
-
-    # Create binary variables for player assignment and Elo selection
-    x = LpVariable.dicts("x", ((i, j) for i in range(10) for j in range(2)), cat='Binary')
-    e = LpVariable.dicts("e", ((i, k) for i in range(10) for k in range(5)), cat='Binary')
-
-    # Objective function: minimize the absolute difference between team average ratings
-    diff = LpVariable("diff", lowBound=0)  # Absolute difference between team averages
-    prob += diff
-
-    # Auxiliary variables for product of Elo ratings and assignment variables
-    prod = LpVariable.dicts("prod", ((i, j, k) for i in range(10) for j in range(2) for k in range(5)), cat='Continuous')
-
-    # Additional binary variables to represent whether a player is assigned to a particular Elo bracket in each team
-    y = LpVariable.dicts("y", ((i, j, k) for i in range(10) for j in range(2) for k in range(5)), cat='Binary')
-
-    # Constraints
-    for i in range(10):
-        prob += lpSum(x[(i, j)] for j in range(2)) == 1  # Each player assigned to exactly one team
-        prob += lpSum(e[(i, k)] for k in range(5)) == 1  # Each player has one chosen Elo
-        for j in range(2):
-            for k in range(5):
-                prob += prod[(i, j, k)] == x[(i, j)] * elo_ratings[i][k]  # Define product variables
-                prob += y[(i, j, k)] >= e[(i, k)] - x[(i, j)]
-                prob += y[(i, j, k)] >= 0
-                prob += y[(i, j, k)] <= 1
-
-    # Add constraints to ensure only one player for each Elo bracket in each team
-    for j in range(2):
-        for k in range(5):
-            prob += lpSum(y[(i, j, k)] for i in range(10)) <= 1
-
-    # Constraints to ensure each team has exactly 5 players
-    for j in range(2):
-        prob += lpSum(x[(i, j)] for i in range(10)) == 5
-
-    # Add constraint to prevent selection of Elo values equal to -1
-    for i in range(10):
-        for k in range(5):
-            if elo_ratings[i][k] == -1:
-                prob += e[(i, k)] == 0
-
-    # Define the average ratings for each team
-    avg_rating_team = [lpSum(prod[(i, j, k)] for i in range(10) for k in range(5)) / 5 for j in range(2)]
-
-    # Define absolute difference between team averages
-    prob += avg_rating_team[0] - avg_rating_team[1] <= diff
-    prob += avg_rating_team[1] - avg_rating_team[0] <= diff
-
-    # Solve the problem
-    prob.solve()
-
-    redRating = value(avg_rating_team[0])
-    blueRating = value(avg_rating_team[1])
-    print(redRating)
-    print(blueRating)
-    # Print results
-    s = (f"Minimal average Elo difference: {value(prob.objective)} \n")
-    s += ("Team 1 🔵: \n")
-    for i in range(10):
-        if value(x[(i, 0)]) == 1:
-            chosen_elo_index = [k for k in range(5) if value(e[(i, k)]) == 1][0]
-            match chosen_elo_index:
-                case 0: role = "top"
-                case 1: role = "jng"
-                case 2: role = "mid"
-                case 3: role = "adc"
-                case 4: role = "sup"
-            players[i].rolePlayed = chosen_elo_index
-            s += (f"{players[i].name} | Role: {role} | Elo in Role: {elo_ratings[i][chosen_elo_index]} \n")
-            redTeam.append(players[i])
-    s+=("Team 2 🔴: \n")
-    for i in range(10):
-        if value(x[(i, 1)]) == 1:
-            chosen_elo_index = [k for k in range(5) if value(e[(i, k)]) == 1][0]
-            match chosen_elo_index:
-                case 0: role = "top"
-                case 1: role = "jng"
-                case 2: role = "mid"
-                case 3: role = "adc"
-                case 4: role = "sup"
-            players[i].rolePlayed = chosen_elo_index
-            s+=(f"{players[i].name} | Role: {role} | Elo in Role: {elo_ratings[i][chosen_elo_index]} \n")
-            blueTeam.append(players[i])
-    await ctx.send(s)
-
-#TODO
-# Bot command to fetch scheduled events
-@bot.command()
-async def get_events(ctx):
-    guild = ctx.guild
-    events = guild.scheduled_events
-    if events:
-        await ctx.reply("Scheduled events:")
-        for event in events:
-            await ctx.send(event.name)
-    else:
-        await ctx.reply("No scheduled events found.")
 #TODO
 @bot.command() 
 async def resetTeams(ctx):
@@ -403,33 +305,10 @@ async def resetTeams(ctx):
     redRating = 0
     blueRating = 0
     await ctx.reply("Teams reset.")
-#TODO
-@bot.command()
-async def help(ctx):
-    await ctx.send("***user @discordHandle***: Prints statistics for the specified user, if none were specified the author is considered the user. \n" +
-                   "***add_user @discordHandle name***: Adds @discordHandle with the specified name to the database, if none were specified the author is considered the user. \n" +
-                   "***start_session***: Starts the in-house session with all signed up users. If a user is not in the database they will be added automatically. This is also called to reshuffle teams. \n" +
-                   "***win team***: Specifies the winning team. (i.e win team1) \n" +
-                   "***add_role role***: Adds the specified role to the calling user. \n" +
-                   "***remove_role role***: Removes the specified role to the calling user. \n" +
-                   "***update_elo role elo***: Updates the elo for the specified role to the given value. \n"
-                   )
-#TODO
-def getUserRoles(ctx, player) -> list[str]:
-    userRoles = []
-    guild = ctx.guild
-    roles = guild.roles
-    for role in roles:
-        if role.name == "inhouse-fill":
-            if(player in role.members):
-                userRoles = ['top', 'jng', 'mid', 'adc', 'sup']
-        elif role.name.startswith("inhouse-"):           
-            if(player in role.members):
-                userRoles.append(role.name.replace("inhouse-", ""))
-    return userRoles
+
 #TODO
 def winProb(rating1, rating2):
-    winprob = 1.0 * 1.0 / (1 + 1.0 * math.pow(10, 1.0 * (rating1 - rating2) / 400))
+    winprob = 1.0 / (1.0 + math.pow(10, (rating1 - rating2) / 400))
     return winprob
 
 #TODO fix elo shit on creation to put -1 in non role fields

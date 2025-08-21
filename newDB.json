@@ -297,6 +297,33 @@
         0,
         0
       ]
+    },
+    "12": {
+      "name": "TROUT",
+      "discordHandle": "trouted",
+      "ClientPUUID": "dad17677-ca67-5dc1-b69d-66929bf92508",
+      "RiotPUUID": "",
+      "elo": [
+        700,
+        -1,
+        600,
+        -1,
+        -1
+      ],
+      "games": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "wins": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     }
   }
 }
