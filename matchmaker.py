@@ -68,7 +68,7 @@ def calcTeams(activePlayers):
 
     # This checks if y is 1 for player p (if player p has been assigned to team t and role r)
     for p in players:
-        model += lpSum(y[(p,t,r)] for t in teams for r in roles) == 1
+        model += lpSum(y[(p,t,r)] for t in teams for r in roles) <= 1
 
     # This checks if there are exactly 1 roles per each team
     for t in teams:

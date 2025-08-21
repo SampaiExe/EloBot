@@ -11,6 +11,8 @@ import math
 from willump import Willump
 from discord import ui, interactions, app_commands
 
+import matchmaker
+
 # TODO Elo Mapping
 # TODO join/leave for matches
 # TODO Match Logic
@@ -70,6 +72,10 @@ async def on_ready():
     await bot.tree.sync()  # Syncs all slash commands
     print(f"Logged in as {bot.user}")
 
+@bot.command()
+async def help(ctx):
+
+    pass
 
 # Join the In-House Session
 @bot.command()
@@ -87,8 +93,8 @@ async def join(ctx):
 # Leave the in-house session
 @bot.command()
 async def leave(ctx):
-    if activePlayers.__contains__(ctx.author):
-        del activePlayers[ctx.author]
+    if activePlayers.__contains__(str(ctx.author)):
+        del activePlayers[str(ctx.author)]
         await ctx.send("You successfully left the session.")
     else:
         await ctx.send("You are not in the current session.")
@@ -212,49 +218,7 @@ async def add_user(interaction: discord.Interaction):
 # TODO
 @bot.command()
 async def win(ctx, *args):
-    global redTeam, blueTeam, redRating, blueRating
-    if (len(redTeam) != 5 or len(blueTeam) != 5):
-        await ctx.reply("There are no current teams.")
-    elif (len(args) != 1):
-        await ctx.reply("Format error. Please specify the winning team.")
-    else:
-        winner = args[0].lower()
-        Pt1 = winProb(blueRating, redRating)
-        Pt2 = winProb(redRating, blueRating)
-        if (winner == "red" or winner == "team 1" or winner == "team1"):
-            for player in redTeam:
-                db.update({'games': player.games + 1}, query.discordHandle == player.discordHandle)
-                db.update({'wins': player.wins + 1}, query.discordHandle == player.discordHandle)
-                # Ra = Ra + K * (1-Pt1)
-                # Rb = Rb + K * (0-Pt2)
-                player.elo[player.rolePlayed] = round(player.elo[player.rolePlayed] + 30 * (1 - Pt1))
-                db.update({'elo': player.elo}, query.discordHandle == player.discordHandle)
-            for player in blueTeam:
-                db.update({'games': player.games + 1}, query.discordHandle == player.discordHandle)
-                player.elo[player.rolePlayed] = round(player.elo[player.rolePlayed] + 30 * (0 - Pt2))
-                db.update({'elo': player.elo}, query.discordHandle == player.discordHandle)
-            redRating = 0
-            blueRating = 0
-            redTeam = []
-            blueTeam = []
-        elif (winner == "blue" or winner == "team 2" or winner == "team2"):
-            for player in blueTeam:
-                db.update({'games': player.games + 1}, query.discordHandle == player.discordHandle)
-                db.update({'wins': player.wins + 1}, query.discordHandle == player.discordHandle)
-                # Ra = Ra + K * (0-Pt1)
-                # Rb = Rb + K * (1-Pt2)
-                player.elo[player.rolePlayed] = round(player.elo[player.rolePlayed] + 30 * (1 - Pt2))
-                db.update({'elo': player.elo}, query.discordHandle == player.discordHandle)
-            for player in redTeam:
-                db.update({'games': player.games + 1}, query.discordHandle == player.discordHandle)
-                player.elo[player.rolePlayed] = round(player.elo[player.rolePlayed] + 30 * (0 - Pt1))
-                db.update({'elo': player.elo}, query.discordHandle == player.discordHandle)
-            redRating = 0
-            blueRating = 0
-            redTeam = []
-            blueTeam = []
-        else:
-            await ctx.reply("Unknown Team, please specify team1/team2 or red/blue")
+
     pass
 
 
@@ -262,42 +226,12 @@ async def win(ctx, *args):
 # Start the in-house session
 @bot.command()
 async def start_session(ctx):
-    global redTeam, blueTeam, redRating, blueRating
-
-    if (len(redTeam) != 0 or len(blueTeam) != 0):
-        await ctx.reply("Previous session still ongoing. Please declare a winner or reshuffle.")
-        return
-    guild = ctx.guild
-    events = guild.scheduled_events
-    activePlayer = []
-    if events:
-        print(events[0])
-        if events[0].user_count < 0:
-            await ctx.send("Not enough players to create teams. Blame Kevin.")
-        else:
-            s = "Current Players: \n"
-            async for user in events[0].users():
-                print(user)
-                p = db.search(query.discordHandle == str(user))
-                print(len(p))
-                if len(p) > 0:
-                    x = json.loads(str(p[0]).replace("\'", "\""), object_hook=lambda d: SimpleNamespace(**d))
-                    _p = player.Player(x.name, x.discordHandle, x.ClientPUUID, x.RiotPUUID, x.elo, x.games, x.wins)
-                    s += str(_p) + "\n"
-                else:
-                    userRoles = getUserRoles(ctx, user)
-                    elo = calcElo(ctx, user, userRoles)
-                    db.insert({"name": str(user), "discordHandle": str(user), "elo": elo, "games": 0, "wins": 0,
-                               "roles": userRoles})
-                    p = str(db.search(query.discordHandle == str(user))[0]).replace("\'", "\"")
-                    x = json.loads(p, object_hook=lambda d: SimpleNamespace(**d))
-                    _p = player.Player(x.name, x.discordHandle, x.ClientPUUID, x.RiotPUUID, x.elo, x.games, x.wins)
-                    s += str(_p) + "\n"
-                activePlayer.append(_p)
-            await ctx.send(s)
-            await shuffle(ctx, activePlayer)
+    if len(activePlayers) != 10:
+        await ctx.send("Not enough players or too many players in current session. Run &join if you want to join the session.")
     else:
-        await ctx.reply("No scheduled events found.")
+        data = matchmaker.calcTeams(activePlayers)
+        print(data)
+    pass
 
 
 # TODO Replace with functionality of matchmaker.py
@@ -305,6 +239,17 @@ async def start_session(ctx):
 async def shuffle(ctx, players):
     pass
 
+#list active players in session
+@bot.command()
+async def list_players(ctx):
+    if len(activePlayers) == 0:
+        await ctx.send("No players in current session.")
+    else:
+        s = "Current players:\n"
+        for k, v in activePlayers.items():
+            s += f"{v["name"]}\n"
+        await ctx.send(s)
+    pass
 
 # TODO
 @bot.command()
