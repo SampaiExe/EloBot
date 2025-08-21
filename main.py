@@ -11,12 +11,12 @@ import math
 from willump import Willump
 from discord import ui, interactions, app_commands
 
-#TODO Elo Mapping
-#TODO join/leave for matches
-#TODO Match Logic
-#TODO WebServices
-#TODO integrate matchmaker
-#TODO elo calculations
+# TODO Elo Mapping
+# TODO join/leave for matches
+# TODO Match Logic
+# TODO WebServices
+# TODO integrate matchmaker
+# TODO elo calculations
 
 
 redTeam = []
@@ -24,7 +24,7 @@ blueTeam = []
 redRating = 0
 blueRating = 0
 players = {}
-activePlayers = []
+activePlayers = {}
 load_dotenv()
 db = TinyDB('newDB.json')
 query = Query()
@@ -36,18 +36,20 @@ for item in playerTable:
     p = player.Player(x.name, x.discordHandle, x.ClientPUUID, x.RiotPUUID, x.elo, x.games, x.wins)
     players[x.discordHandle] = p
 
-#Discord Stuff
-#----------------------------------------------------------------------------------------------#
+# Discord Stuff
+# ----------------------------------------------------------------------------------------------#
 TOKEN = os.getenv('DISCORD_TOKEN')
 intents = discord.Intents.default()
 intents.message_content = True
 intents.guilds = True
 intents.members = True
 
-bot = commands.Bot(command_prefix='&', intents = intents, help_command=None)
-#----------------------------------------------------------------------------------------------#
+bot = commands.Bot(command_prefix='&', intents=intents, help_command=None)
 
-#Returns PUUID by Summoner Name
+
+# ----------------------------------------------------------------------------------------------#
+
+# Returns PUUID by Summoner Name
 async def getUserPUUID(SummonerName):
     if SummonerName is None:
         return -1
@@ -61,53 +63,57 @@ async def getUserPUUID(SummonerName):
     data = await response.json()
     return data['puuid']
 
-#Sync Slash-Commands
+
+# Sync Slash-Commands
 @bot.event
 async def on_ready():
     await bot.tree.sync()  # Syncs all slash commands
     print(f"Logged in as {bot.user}")
 
-#Join the In-House Session
+
+# Join the In-House Session
 @bot.command()
 async def join(ctx):
-    p = playerTable.search(query.discordHandle == str(ctx.author))
+    p = playerTable.search(query.discordHandle == str(ctx.author))[0]
     if p is None:
         await ctx.send("You are not in the Database, run /add_user to register.")
         return
     else:
-        activePlayers.append(ctx.author)
+        activePlayers[p["discordHandle"]] = p
         await ctx.send("You successfully joined the session.")
     pass
 
-#Leave the in-house session
+
+# Leave the in-house session
 @bot.command()
 async def leave(ctx):
-    if ctx.author in activePlayers:
-        activePlayers.remove(ctx.author)
+    if activePlayers.__contains__(ctx.author):
+        del activePlayers[ctx.author]
         await ctx.send("You successfully left the session.")
     else:
         await ctx.send("You are not in the current session.")
     pass
 
+
 # See stats for the specified player
 @bot.command()
 async def user(ctx, *args):
     members = ctx.message.mentions
-    if len(args) == 0:  #Info about yourself
+    if len(args) == 0:  # Info about yourself
         p = playerTable.search(query.discordHandle == str(ctx.author))
         print(p)
-        if len(p) > 0: #player exists
+        if len(p) > 0:  # player exists
             x = json.loads(str(p[0]).replace("\'", "\""), object_hook=lambda d: SimpleNamespace(**d))
             _p = player.Player(x.name, x.discordHandle, x.ClientPUUID, x.RiotPUUID, x.elo, x.games, x.wins)
             await ctx.reply(_p)
         else:
             await ctx.reply("Player not in database.")
-    elif len(args) == 1: #Info about someone else
-        if len(members) != 1: 
+    elif len(args) == 1:  # Info about someone else
+        if len(members) != 1:
             await ctx.reply("Wrong format. Please specify one or no players.")
         else:
             p = playerTable.search(query.discordHandle == str(members[0]))
-            if len(p) > 0: #player exists
+            if len(p) > 0:  # player exists
                 x = json.loads(str(p[0]).replace("\'", "\""), object_hook=lambda d: SimpleNamespace(**d))
                 _p = player.Player(x.name, x.discordHandle, x.ClientPUUID, x.RiotPUUID, x.elo, x.games, x.wins)
                 await ctx.reply(_p)
@@ -115,6 +121,7 @@ async def user(ctx, *args):
                 await ctx.reply("Player not in database.")
     else:
         await ctx.reply("Wrong format. Please specify one or no players.")
+
 
 class RegisterModal(ui.Modal):
     def __init__(self):
@@ -188,8 +195,6 @@ class RegisterModal(ui.Modal):
             "elo": elo_list,
             "games": [0, 0, 0, 0, 0],
             "wins": [0, 0, 0, 0, 0]
-
-
         })
 
         await interaction.response.send_message(
@@ -197,13 +202,14 @@ class RegisterModal(ui.Modal):
             ephemeral=True
         )
 
+
 @bot.tree.command(name="add_user", description="Register yourself")
 async def add_user(interaction: discord.Interaction):
     modal = RegisterModal()
     await interaction.response.send_modal(modal)
 
 
-#TODO
+# TODO
 @bot.command()
 async def win(ctx, *args):
     global redTeam, blueTeam, redRating, blueRating
@@ -217,15 +223,15 @@ async def win(ctx, *args):
         Pt2 = winProb(redRating, blueRating)
         if (winner == "red" or winner == "team 1" or winner == "team1"):
             for player in redTeam:
-                db.update({'games': player.games+1}, query.discordHandle == player.discordHandle)
-                db.update({'wins': player.wins+1}, query.discordHandle == player.discordHandle)
+                db.update({'games': player.games + 1}, query.discordHandle == player.discordHandle)
+                db.update({'wins': player.wins + 1}, query.discordHandle == player.discordHandle)
                 # Ra = Ra + K * (1-Pt1)
                 # Rb = Rb + K * (0-Pt2)
-                player.elo[player.rolePlayed] = round(player.elo[player.rolePlayed] + 30 * (1-Pt1))
+                player.elo[player.rolePlayed] = round(player.elo[player.rolePlayed] + 30 * (1 - Pt1))
                 db.update({'elo': player.elo}, query.discordHandle == player.discordHandle)
             for player in blueTeam:
-                db.update({'games': player.games+1}, query.discordHandle == player.discordHandle)
-                player.elo[player.rolePlayed] = round(player.elo[player.rolePlayed] + 30 * (0-Pt2))
+                db.update({'games': player.games + 1}, query.discordHandle == player.discordHandle)
+                player.elo[player.rolePlayed] = round(player.elo[player.rolePlayed] + 30 * (0 - Pt2))
                 db.update({'elo': player.elo}, query.discordHandle == player.discordHandle)
             redRating = 0
             blueRating = 0
@@ -233,15 +239,15 @@ async def win(ctx, *args):
             blueTeam = []
         elif (winner == "blue" or winner == "team 2" or winner == "team2"):
             for player in blueTeam:
-                db.update({'games': player.games+1}, query.discordHandle == player.discordHandle)
-                db.update({'wins': player.wins+1}, query.discordHandle == player.discordHandle)
-                #Ra = Ra + K * (0-Pt1)
-                #Rb = Rb + K * (1-Pt2)
-                player.elo[player.rolePlayed] = round(player.elo[player.rolePlayed] + 30 * (1-Pt2))
+                db.update({'games': player.games + 1}, query.discordHandle == player.discordHandle)
+                db.update({'wins': player.wins + 1}, query.discordHandle == player.discordHandle)
+                # Ra = Ra + K * (0-Pt1)
+                # Rb = Rb + K * (1-Pt2)
+                player.elo[player.rolePlayed] = round(player.elo[player.rolePlayed] + 30 * (1 - Pt2))
                 db.update({'elo': player.elo}, query.discordHandle == player.discordHandle)
             for player in redTeam:
-                db.update({'games': player.games+1}, query.discordHandle == player.discordHandle)
-                player.elo[player.rolePlayed] = round(player.elo[player.rolePlayed] + 30 * (0-Pt1))
+                db.update({'games': player.games + 1}, query.discordHandle == player.discordHandle)
+                player.elo[player.rolePlayed] = round(player.elo[player.rolePlayed] + 30 * (0 - Pt1))
                 db.update({'elo': player.elo}, query.discordHandle == player.discordHandle)
             redRating = 0
             blueRating = 0
@@ -251,13 +257,14 @@ async def win(ctx, *args):
             await ctx.reply("Unknown Team, please specify team1/team2 or red/blue")
     pass
 
-#TODO
-#Start the in-house session
+
+# TODO
+# Start the in-house session
 @bot.command()
 async def start_session(ctx):
     global redTeam, blueTeam, redRating, blueRating
 
-    if (len(redTeam) != 0 or len(blueTeam)!=0):
+    if (len(redTeam) != 0 or len(blueTeam) != 0):
         await ctx.reply("Previous session still ongoing. Please declare a winner or reshuffle.")
         return
     guild = ctx.guild
@@ -280,24 +287,27 @@ async def start_session(ctx):
                 else:
                     userRoles = getUserRoles(ctx, user)
                     elo = calcElo(ctx, user, userRoles)
-                    db.insert({"name": str(user), "discordHandle": str(user), "elo": elo, "games": 0, "wins": 0, "roles": userRoles})
+                    db.insert({"name": str(user), "discordHandle": str(user), "elo": elo, "games": 0, "wins": 0,
+                               "roles": userRoles})
                     p = str(db.search(query.discordHandle == str(user))[0]).replace("\'", "\"")
                     x = json.loads(p, object_hook=lambda d: SimpleNamespace(**d))
                     _p = player.Player(x.name, x.discordHandle, x.ClientPUUID, x.RiotPUUID, x.elo, x.games, x.wins)
                     s += str(_p) + "\n"
-                activePlayer.append(_p)   
+                activePlayer.append(_p)
             await ctx.send(s)
             await shuffle(ctx, activePlayer)
     else:
         await ctx.reply("No scheduled events found.")
 
-#TODO Replace with functionality of matchmaker.py
-#Shuffle Teams
+
+# TODO Replace with functionality of matchmaker.py
+# Shuffle Teams
 async def shuffle(ctx, players):
     pass
 
-#TODO
-@bot.command() 
+
+# TODO
+@bot.command()
 async def resetTeams(ctx):
     global redTeam, blueTeam, redRating, blueRating
     redTeam = []
@@ -306,14 +316,16 @@ async def resetTeams(ctx):
     blueRating = 0
     await ctx.reply("Teams reset.")
 
-#TODO
+
+# TODO
 def winProb(rating1, rating2):
     winprob = 1.0 / (1.0 + math.pow(10, (rating1 - rating2) / 400))
     return winprob
 
-#TODO fix elo shit on creation to put -1 in non role fields
-#TODO make elo change command
-#TODO
+
+# TODO fix elo shit on creation to put -1 in non role fields
+# TODO make elo change command
+# TODO
 @bot.command()
 async def add_role(ctx, *args):
     if len(args) != 1:
@@ -338,7 +350,9 @@ async def add_role(ctx, *args):
             await ctx.reply("Roles successfully updated.")
         else:
             await ctx.reply("Unknown Role.")
-#TODO
+
+
+# TODO
 @bot.command()
 async def remove_role(ctx, *args):
     if len(args) != 1:
@@ -363,11 +377,14 @@ async def remove_role(ctx, *args):
             await ctx.reply("Roles successfully updated.")
         else:
             await ctx.reply("Unknown Role.")
-#TODO
+
+
+# TODO
 @bot.command()
 async def update_elo(ctx, *args):
     if len(args) != 2:
-        await ctx.reply("Wrong Format. Please specify the role you want to edit and the value it should take on. (i.e top 1200)")
+        await ctx.reply(
+            "Wrong Format. Please specify the role you want to edit and the value it should take on. (i.e top 1200)")
         return
     p = db.search(query.discordHandle == str(ctx.author))
     if len(p) < 1:
@@ -388,24 +405,27 @@ async def update_elo(ctx, *args):
             await ctx.reply("Unknown Role.")
     pass
 
-#TODO
+
+# TODO
 def calcElo(ctx, user, roles) -> list[int]:
     elo = np.empty(5)
     elo.fill(-1)
 
-    if('top' in roles):
+    if ('top' in roles):
         elo[0] = 1200
-    if('jng' in roles):
+    if ('jng' in roles):
         elo[1] = 1200
-    if('mid' in roles):
+    if ('mid' in roles):
         elo[2] = 1200
-    if('adc' in roles):
+    if ('adc' in roles):
         elo[3] = 1200
-    if('sup' in roles):
+    if ('sup' in roles):
         elo[4] = 1200
     # user.elo = elo
     return elo.tolist()
-#TODO
+
+
+# TODO
 def getRoleIndex(role):
     match role:
         case 'top':
@@ -420,8 +440,6 @@ def getRoleIndex(role):
             return 4
         case _:
             return -1
+
+
 bot.run(TOKEN)
-
-
-
-

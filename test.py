@@ -5,11 +5,14 @@ import requests
 import asyncio
 import json
 from willump import Willump
-
+from tinydb import TinyDB, Query
 import requests
+import matchmaker
+from main import activePlayers
 
-import requests
-
+db = TinyDB('newDB.json')
+query = Query()
+playerTable = db.table('players')
 
 def get_champion_map(version="15.16.1"):
     """Fetch DDragon champion data and return championId -> championName"""
@@ -65,24 +68,30 @@ def parse_match(match_json, champion_map):
 
 
 async def main():
-    wllp = await Willump().start()
+    # wllp = await Willump().start()
+    #
+    # # response = await wllp.request('get', f'/lol-summoner/v1/alias/lookup?gameName=the voices ahaha&tagLine=feet')
+    #
+    #
+    # gameID = 7497261946
+    # response = await wllp.request('get', f'/lol-match-history/v1/games/{gameID}')
+    # game = await response.json()
+    # await wllp.close()
+    #
+    # champion_map = get_champion_map(version="15.16.1")  # use your match's gameVersion
+    #
+    #
+    # players = parse_match(game, champion_map)
+    #
+    # for p in players:
+    #     print(f"{p['summonerName']}#{p['tagLine']} - {p['champion']} ({p['role']}) "
+    #           f"KDA: {p['kills']}/{p['deaths']}/{p['assists']} DMG: {p['damageToChampions']} CS: {p['totalCS']} Win: {p['win']} : {p['puuid']}")
 
-    # response = await wllp.request('get', f'/lol-summoner/v1/alias/lookup?gameName=the voices ahaha&tagLine=feet')
-
-
-    gameID = 7497261946
-    response = await wllp.request('get', f'/lol-match-history/v1/games/{gameID}')
-    game = await response.json()
-    await wllp.close()
-
-    champion_map = get_champion_map(version="15.16.1")  # use your match's gameVersion
-
-
-    players = parse_match(game, champion_map)
-
-    for p in players:
-        print(f"{p['summonerName']}#{p['tagLine']} - {p['champion']} ({p['role']}) "
-              f"KDA: {p['kills']}/{p['deaths']}/{p['assists']} DMG: {p['damageToChampions']} CS: {p['totalCS']} Win: {p['win']} : {p['puuid']}")
+    activePlayers = {}
+    _p = playerTable.all()
+    for entry in _p:
+        activePlayers[entry["discordHandle"]] = entry
+    data = matchmaker.calcTeams(activePlayers)
 
 asyncio.run(main())
 
