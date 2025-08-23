@@ -2,8 +2,17 @@ import asyncio
 import json
 import signal
 import contextlib
+from types import SimpleNamespace
+
 import requests
+from sympy.strategies.core import switch
 from willump import Willump
+from tinydb import TinyDB, Query
+import player
+
+db = TinyDB('newDB.json')
+query = Query()
+playerTable = db.table('players')
 
 # -------------------- Champion Mapping --------------------
 def get_champion_map(version="15.16.1"):
@@ -11,6 +20,22 @@ def get_champion_map(version="15.16.1"):
     url = f"https://ddragon.leagueoflegends.com/cdn/{version}/data/en_US/champion.json"
     data = requests.get(url).json()
     return {int(c["key"]): c["id"] for c in data["data"].values()}
+
+
+def updatePlayersInDB(players):
+    for player in players:
+        p = playerTable.search(query.ClientPUUID == player["puuid"])
+        x = json.loads(str(p[0]).replace("\'", "\""), object_hook=lambda d: SimpleNamespace(**d))
+        _p = player.Player(x.name, x.discordHandle, x.ClientPUUID, x.RiotPUUID, x.elo, x.games, x.wins)
+
+        roleID = getRoleID(player["lane"], player["role"])
+        if roleID == -1:
+            return
+        _p.games[roleID] += 1
+        if player["win"]:
+            _p.wins[roleID] += 1
+            _p.elo[roleID] += calcElo
+
 
 # -------------------- Match Parser --------------------
 def parse_match(match_json, champion_map):
@@ -32,7 +57,10 @@ def parse_match(match_json, champion_map):
             "summonerName": identity.get("summonerName") or identity.get("gameName", ""),
             "tagLine": identity.get("tagLine", ""),
             "champion": champion_name,
-            "role": timeline.get("lane", "UNKNOWN"),
+            "puuid": identity.get("puuid", ""),
+            "lane": timeline.get("lane", "UNKNOWN"),
+            "role": timeline.get("role", "UNKNOWN"),
+            "roleID": 0,
             "teamId": p.get("teamId"),
             "kills": stats.get("kills", 0),
             "deaths": stats.get("deaths", 0),
@@ -43,8 +71,24 @@ def parse_match(match_json, champion_map):
         })
     return players
 
+
+def getRoleID(lane, role):
+    match lane:
+        case "TOP":
+            return 0
+        case "JUNGLE":
+            return 1
+        case "MIDDLE":
+            return 2
+        case "BOTTOM":
+            if role == "CARRY": return 3
+            else: return 4
+        case _:
+            return -1
+
+
 # -------------------- Event Consumer --------------------
-async def main():
+async def run_reader():
     wllp = await Willump().start()
     stop = asyncio.Event()
 
@@ -70,11 +114,11 @@ async def main():
 
         if eog.get("gameType") != "CUSTOM_GAME":
             print("Skipping non-custom game.")
-            return
+            return -1
 
         if len(players) < 10:
             print("Skipping game, not enough players")
-            return
+            return -1
 
 
         print(f"Parsed {len(players)} players from match {game_id}:")
@@ -84,6 +128,9 @@ async def main():
                   f"KDA {p['kills']}/{p['deaths']}/{p['assists']} | "
                   f"DMG {p['damageToChampions']} | CS {p['totalCS']} | "
                   f"{'Win' if p['win'] else 'Loss'}")
+
+        return players
+
 
     # filter for end-of-game stats block
     wllp.subscription_filter_endpoint(subscription, "/lol-end-of-game/v1/eog-stats-block", handler=handle_eog)
@@ -105,7 +152,7 @@ async def main():
 
 if __name__ == "__main__":
     try:
-        asyncio.run(main())
+        asyncio.run(run_reader())
     except KeyboardInterrupt:
         # fallback if signal handling didn't trigger
         print("Interrupted by user")

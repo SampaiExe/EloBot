@@ -28,7 +28,6 @@ def get_puuid(game_name: str, tag_line: str, region="europe"):
 
 # Example usage: user types their IGN + tagline
 if __name__ == "__main__":
-
     print(data['red']["red_team"])
     ign = input("Enter IGN (game name): ")
     tag = input("Enter tagline (after #): ")

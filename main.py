@@ -1,6 +1,6 @@
 import os
 
-import discord, json, player, random
+import discord, json, player, random, asyncio
 from dotenv import load_dotenv
 from tinydb import TinyDB, Query
 from types import SimpleNamespace
@@ -10,7 +10,7 @@ import numpy as np
 import math
 from willump import Willump
 from discord import ui, interactions, app_commands
-
+import gameReader
 import matchmaker
 
 # TODO Elo Mapping
@@ -71,6 +71,7 @@ async def getUserPUUID(SummonerName):
 async def on_ready():
     await bot.tree.sync()  # Syncs all slash commands
     print(f"Logged in as {bot.user}")
+    asyncio.create_task(gameReader.run_reader())
 
 @bot.command()
 async def help(ctx):
@@ -230,6 +231,7 @@ async def start_session(ctx):
         await ctx.send("Not enough players or too many players in current session. Run &join if you want to join the session.")
     else:
         data = matchmaker.calcTeams(activePlayers)
+        winProb(data["red"]["red_average"], data["blue"]["blue_average"])
         print(data)
     pass
 
